@@ -10,7 +10,7 @@
 
 ## Architecture
 
-- Cloudflare Worker entrypoint: `src/index.ts`
+- Runtime entrypoint: `src/index.ts`
 - Project modules: `src/projects/*.ts`
 - Shared page rendering: `src/site/*`
 
@@ -23,4 +23,6 @@
 ## Styling
 
 - Never use inline `<style>` tags in HTML templates.
-- Prefer regular CSS cascading to override Oat styles (`https://github.com/knadh/oat`).
+- Prefer regular CSS cascading to override library styles.
+- Keep the home page on a single dark theme using a feminine palette defined with CSS variables.
+- Use distinct fonts for headings and body text.

@@ -12,7 +12,7 @@ const htmlHeaders = {
 
 const cssHeaders = {
   "content-type": "text/css; charset=utf-8",
-  "cache-control": "public, max-age=600",
+  "cache-control": "no-store",
 };
 
 function normalizePath(pathname: string): string {
@@ -34,7 +34,7 @@ function cssResponse(body: string): Response {
 function homeResponse(): Response {
   const body = renderLayout({
     title: "PapoDado | Projetos",
-    description: "Projetos do curso PapoDado no Cloudflare Workers.",
+    description: "Projetos do curso PapoDado.",
     isHome: true,
     content: renderHomePage(listProjects()),
   });

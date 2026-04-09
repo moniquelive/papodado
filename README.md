@@ -1,4 +1,4 @@
-# PapoDado on Cloudflare Workers
+# PapoDado project site
 
 This repository is ready to publish course projects for:
 
@@ -6,9 +6,8 @@ https://eavparquelage.rj.gov.br/curso/papodado-visualizacao-artistica-de-dados
 
 The site uses:
 
-- Cloudflare Workers
-- Oat UI (`@knadh/oat`) via CDN
 - A modular project registry for a small set of pages (under 5 projects)
+- Semantic HTML with a custom themed stylesheet
 
 ## Quick start
 
@@ -44,7 +43,7 @@ mise exec -- wrangler login
 
 ## Project structure
 
-- `src/index.ts`: Worker router and HTTP responses.
+- `src/index.ts`: app router and HTTP responses.
 - `src/projects/`: one module per project page.
 - `src/site/`: shared layout and page renderers.
 - `src/site/styles.ts`: global stylesheet served at `/assets/site.css`.

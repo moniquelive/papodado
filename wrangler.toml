@@ -1,0 +1,4 @@
+name = "papodado"
+main = "src/index.ts"
+compatibility_date = "2026-04-09"
+workers_dev = true

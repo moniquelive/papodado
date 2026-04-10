@@ -1,4 +1,33 @@
+# Dependencies
 node_modules/
-.wrangler/
+
+# Build artifacts
 dist/
+coverage/
+*.tsbuildinfo
+
+# Bundled sketch outputs (source of truth is .ts)
+public/assets/projects/*.js
+public/assets/projects/*.js.map
+
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars
+.dev.vars.*
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local overrides
+.mise.local.toml
+
+# OS files
 .DS_Store

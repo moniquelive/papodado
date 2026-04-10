@@ -284,6 +284,28 @@ main [data-project-status][data-status="published"] {
   color: #7ad9c7;
 }
 
+main [data-project-stage] {
+  display: grid;
+  gap: 0.95rem;
+}
+
+main [data-project-stage] h2 {
+  margin: 0;
+}
+
+main [data-p5-canvas] {
+  border: 1px solid var(--border);
+  border-radius: 0.95rem;
+  overflow: hidden;
+  background: #f3f1f7;
+}
+
+main [data-p5-canvas] canvas {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+}
+
 main [data-empty-canvas] {
   min-height: 44vh;
   display: grid;

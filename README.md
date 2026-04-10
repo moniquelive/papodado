@@ -8,6 +8,7 @@ The site uses:
 
 - A modular project registry for a small set of pages (under 5 projects)
 - Semantic HTML with a custom themed stylesheet
+- p5.js for standalone project sketches
 
 ## Quick start
 
@@ -47,11 +48,12 @@ mise exec -- wrangler login
 - `src/projects/`: one module per project page.
 - `src/site/`: shared layout and page renderers.
 - `src/site/styles.ts`: global stylesheet served at `/assets/site.css`.
+- `public/`: static assets served directly (including built sketch bundles).
 
 Current routes:
 
 - `/` project index
-- `/projects/projeto-01` empty starter page
+- `/projects/projeto-01` animated p5.js chart (first draft)
 - `/healthz` simple health check
 
 ## Add a new project page
@@ -65,3 +67,5 @@ Run checks:
 ```bash
 mise run check
 ```
+
+Project sketches are authored in TypeScript (for example `public/assets/projects/projeto-01.ts`) and bundled to browser-ready JS via `npm run build:sketches`.

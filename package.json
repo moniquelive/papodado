@@ -4,11 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "check": "tsc --noEmit"
+    "build:sketches": "esbuild public/assets/projects/projeto-01.ts --bundle --format=iife --platform=browser --target=es2020 --outfile=public/assets/projects/projeto-01.js",
+    "dev": "npm run build:sketches && wrangler dev",
+    "deploy": "npm run build:sketches && wrangler deploy",
+    "check": "npm run build:sketches && tsc --noEmit"
   },
   "devDependencies": {
+    "esbuild": "^0.25.9",
     "typescript": "^5.8.3",
     "wrangler": "^4.11.1"
   }

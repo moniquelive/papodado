@@ -37,6 +37,8 @@
 
 - `origin` is GitHub upstream (`main` tracks `origin/main`).
 - `codeberg` is a mirror remote when configured.
+- Always push branch updates to both remotes (`origin` and `codeberg`) using the same branch name.
+- If one remote is missing or a push fails, report it clearly in the handoff.
 
 ## Styling
 

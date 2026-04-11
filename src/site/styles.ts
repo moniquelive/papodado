@@ -306,6 +306,29 @@ main [data-p5-canvas] canvas {
   height: auto !important;
 }
 
+main [data-project-original] {
+  margin: 0.2rem 0 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+main [data-project-original] img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.95rem;
+  background: #120c1d;
+  box-shadow: 0 12px 24px rgb(0 0 0 / 28%);
+}
+
+main [data-project-original] figcaption {
+  margin: 0;
+  color: var(--faint-foreground);
+  font-size: 0.86rem;
+  letter-spacing: 0.02em;
+}
+
 main [data-empty-canvas] {
   min-height: 44vh;
   display: grid;

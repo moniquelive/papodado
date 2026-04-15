@@ -61,8 +61,7 @@ a:hover {
 
 h1,
 h2,
-h3,
-h4 {
+h3 {
   color: var(--card-foreground);
   font-family: var(--font-heading);
   letter-spacing: 0.02em;
@@ -260,36 +259,23 @@ main [data-project-card] footer {
   margin-top: 1rem;
 }
 
-main [data-project-status] {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.16rem 0.58rem;
-  color: var(--faint-foreground);
-  font-size: 0.74rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-main [data-project-status][data-status="draft"] {
-  border-color: rgb(246 194 138 / 55%);
-  background: rgb(246 194 138 / 15%);
-  color: #f6c28a;
-}
-
-main [data-project-status][data-status="published"] {
-  border-color: rgb(122 217 199 / 55%);
-  background: rgb(122 217 199 / 15%);
-  color: #7ad9c7;
-}
-
 main [data-project-stage] {
   display: grid;
   gap: 0.95rem;
 }
 
 main [data-project-stage] h2 {
+  margin: 0;
+}
+
+main [data-flourish-wrapper] {
+  border: 1px solid var(--border);
+  border-radius: 0.95rem;
+  overflow: hidden;
+  background: #120c1d;
+}
+
+main [data-flourish-wrapper] .flourish-embed {
   margin: 0;
 }
 
@@ -327,21 +313,6 @@ main [data-project-original] figcaption {
   color: var(--faint-foreground);
   font-size: 0.86rem;
   letter-spacing: 0.02em;
-}
-
-main [data-empty-canvas] {
-  min-height: 44vh;
-  display: grid;
-  place-items: center;
-  border: 1px dashed var(--input);
-  border-radius: 1rem;
-  background: repeating-linear-gradient(
-    45deg,
-    rgb(43 31 59 / 35%) 0 16px,
-    rgb(27 21 39 / 35%) 16px 32px
-  );
-  padding: 1rem;
-  text-align: center;
 }
 
 footer {

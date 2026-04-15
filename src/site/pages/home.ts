@@ -1,14 +1,9 @@
-import type { Project, ProjectStatus } from "../../projects/types";
+import type { Project } from "../../projects/types";
 import { escapeHtml } from "../escape-html";
 
 const COURSE_URL =
   "https://eavparquelage.rj.gov.br/curso/papodado-visualizacao-artistica-de-dados";
 const SITE_URL = "https://papodado.monique.dev";
-
-const statusText: Record<ProjectStatus, string> = {
-  draft: "Rascunho",
-  published: "Publicado",
-};
 
 export function renderHomePage(projects: Project[]): string {
   const cards =
@@ -19,12 +14,10 @@ export function renderHomePage(projects: Project[]): string {
             const slug = escapeHtml(project.slug);
             const title = escapeHtml(project.title);
             const summary = escapeHtml(project.summary);
-            const status = escapeHtml(statusText[project.status]);
 
             return `<li>
   <article data-project-card>
     <header>
-      <p><small data-project-status data-status="${project.status}">${status}</small></p>
       <h3><a href="/projects/${slug}">${title}</a></h3>
       <p>${summary}</p>
     </header>

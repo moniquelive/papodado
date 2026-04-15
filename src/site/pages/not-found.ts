@@ -1,11 +1,14 @@
-import { escapeHtml } from "../escape-html";
+import Mustache from "mustache";
+import notFoundPageTemplateSource from "../templates/pages/not-found.mustache";
+
+type NotFoundPageTemplateInput = {
+  pathname: string;
+};
+
+Mustache.parse(notFoundPageTemplateSource);
 
 export function renderNotFoundPage(pathname: string): string {
-  return `
-<section>
-  <h1>Pagina nao encontrada</h1>
-  <p>O caminho <code>${escapeHtml(pathname)}</code> nao existe.</p>
-  <p><a href="/">Voltar para a pagina inicial</a></p>
-</section>
-`;
+  const templateInput: NotFoundPageTemplateInput = { pathname };
+
+  return Mustache.render(notFoundPageTemplateSource, templateInput);
 }

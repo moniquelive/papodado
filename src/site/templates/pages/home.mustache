@@ -1,0 +1,34 @@
+<section data-home-hero>
+  <p data-home-kicker>PapoDado | Visualizacao Artistica de Dados</p>
+  <h1>Laboratorio visual de Monique Oliveira</h1>
+  <p>Espaco oficial para publicar os projetos do curso com estrutura modular e implantacao dedicada.</p>
+  <p>Uma base pequena e curada para poucos trabalhos, cada um em sua propria rota.</p>
+  <p data-home-links>
+    <a href="{{{siteUrl}}}" target="_blank" rel="noreferrer">papodado.monique.dev</a>
+    <a href="{{{courseUrl}}}" target="_blank" rel="noreferrer">Pagina do curso</a>
+  </p>
+</section>
+<section>
+  <h2>Indice de projetos</h2>
+  <p>Selecione um projeto para abrir a pagina dedicada.</p>
+  {{#hasProjects}}
+  <ul data-project-list>
+    {{#projects}}
+    <li>
+      <article data-project-card>
+        <header>
+          <h3><a href="/projects/{{slug}}">{{title}}</a></h3>
+          <p>{{summary}}</p>
+        </header>
+        <footer>
+          <a href="/projects/{{slug}}">Abrir projeto</a>
+        </footer>
+      </article>
+    </li>
+    {{/projects}}
+  </ul>
+  {{/hasProjects}}
+  {{^hasProjects}}
+  <p>Nenhum projeto cadastrado ainda.</p>
+  {{/hasProjects}}
+</section>

@@ -1,25 +1,28 @@
+import Mustache from "mustache";
 import type { Project, ProjectStatus } from "../../projects/types";
-import { escapeHtml } from "../escape-html";
+import projectPageTemplateSource from "../templates/pages/project.mustache";
 
 const statusText: Record<ProjectStatus, string> = {
   draft: "Rascunho",
   published: "Publicado",
 };
 
-export function renderProjectPage(project: Project): string {
-  const status = escapeHtml(statusText[project.status]);
-  const title = escapeHtml(project.title);
-  const summary = escapeHtml(project.summary);
+type ProjectPageTemplateInput = {
+  status: string;
+  title: string;
+  summary: string;
+  projectBody: string;
+};
 
-  return `
-<p><a href="/">Voltar para o indice</a></p>
-<section>
-  <header>
-    <p><small>${status}</small></p>
-    <h1>${title}</h1>
-    <p>${summary}</p>
-  </header>
-</section>
-${project.render()}
-`;
+Mustache.parse(projectPageTemplateSource);
+
+export function renderProjectPage(project: Project): string {
+  const templateInput: ProjectPageTemplateInput = {
+    status: statusText[project.status],
+    title: project.title,
+    summary: project.summary,
+    projectBody: project.render(),
+  };
+
+  return Mustache.render(projectPageTemplateSource, templateInput);
 }

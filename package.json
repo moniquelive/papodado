@@ -9,7 +9,11 @@
     "deploy": "npm run build:sketches && wrangler deploy",
     "check": "npm run build:sketches && tsc --noEmit"
   },
+  "dependencies": {
+    "mustache": "^4.2.0"
+  },
   "devDependencies": {
+    "@types/mustache": "^4.2.6",
     "esbuild": "^0.25.9",
     "typescript": "^5.8.3",
     "wrangler": "^4.11.1"

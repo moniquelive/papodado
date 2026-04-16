@@ -1,0 +1,22 @@
+{{- $projects := where .Site.RegularPages "Section" "projects" -}}
+{{- $projects = where $projects "Params.status" "published" -}}
+{{- $projects = sort $projects "Params.weight" "asc" -}}
+{{- if gt (len $projects) 0 -}}
+<ul data-project-list>
+  {{- range $projects -}}
+  <li>
+    <article data-project-card>
+      <header>
+        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+        <p>{{ .Params.summary }}</p>
+      </header>
+      <footer>
+        <a href="{{ .RelPermalink }}">Abrir projeto</a>
+      </footer>
+    </article>
+  </li>
+  {{- end -}}
+</ul>
+{{- else -}}
+<p>Nenhum projeto cadastrado ainda.</p>
+{{- end -}}

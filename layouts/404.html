@@ -1,0 +1,17 @@
+{{ define "main" }}
+<section>
+  <h1>Pagina nao encontrada</h1>
+  <p>O caminho <code id="missing-path">desconhecido</code> nao existe.</p>
+  <p><a href="/">Voltar para a pagina inicial</a></p>
+</section>
+<script>
+  (() => {
+    const target = document.getElementById("missing-path");
+    if (!target) {
+      return;
+    }
+
+    target.textContent = window.location.pathname || "/";
+  })();
+</script>
+{{ end }}

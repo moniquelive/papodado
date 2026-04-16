@@ -1,0 +1,23 @@
+<section data-project-stage>
+  <h2>{{ .Get "heading" }}</h2>
+  <p>{{ .Get "description" }}</p>
+  <div
+    id="{{ .Get "container_id" }}"
+    data-p5-canvas
+    role="img"
+    aria-label="{{ .Get "aria_label" }}"
+  ></div>
+  {{- with .Get "original_src" }}
+  <figure data-project-original>
+    <img
+      src="{{ . }}"
+      alt="{{ $.Get "original_alt" }}"
+      loading="lazy"
+      decoding="async"
+    >
+    <figcaption>{{ $.Get "original_caption" }}</figcaption>
+  </figure>
+  {{- end }}
+</section>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js" defer></script>
+<script src="{{ .Get "sketch_src" }}" defer></script>

@@ -1,0 +1,16 @@
+{{ define "main" }}
+{{- $status := lower (default "draft" .Params.status) -}}
+{{- $statusLabel := "Rascunho" -}}
+{{- if eq $status "published" -}}
+  {{- $statusLabel = "Publicado" -}}
+{{- end -}}
+<p><a href="/">Voltar para o indice</a></p>
+<section>
+  <header>
+    <p><small>{{ $statusLabel }}</small></p>
+    <h1>{{ .Title }}</h1>
+    <p>{{ .Params.summary }}</p>
+  </header>
+</section>
+{{ .Content }}
+{{ end }}

@@ -4,17 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:sketches": "esbuild public/assets/projects/projeto-01.ts --bundle --format=iife --platform=browser --target=es2020 --outfile=public/assets/projects/projeto-01.js",
-    "dev": "npm run build:sketches && wrangler dev",
-    "deploy": "npm run build:sketches && wrangler deploy",
-    "check": "npm run build:sketches && tsc --noEmit"
-  },
-  "dependencies": {
-    "mustache": "^4.2.0"
+    "build:sketches": "esbuild assets/projects/projeto-01.ts --bundle --format=iife --platform=browser --target=es2020 --outfile=static/assets/projects/projeto-01.js",
+    "build:hugo": "hugo --minify --destination dist",
+    "build": "npm run build:sketches && npm run build:hugo",
+    "dev": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "check": "npm run build && tsc --noEmit"
   },
   "devDependencies": {
-    "@types/mustache": "^4.2.6",
     "esbuild": "^0.25.9",
+    "hugo-bin": "^0.149.2",
     "typescript": "^5.8.3",
     "wrangler": "^4.11.1"
   }

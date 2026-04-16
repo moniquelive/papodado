@@ -1,20 +1,35 @@
+{{- $isProjects := or .IsHome (eq .Section "projects") -}}
+{{- $pageTitle := .Title -}}
+{{- if .IsHome -}}
+  {{- $pageTitle = .Site.Title -}}
+{{- end -}}
+{{- $description := .Description -}}
+{{- if not $description -}}
+  {{- $description = .Params.summary -}}
+{{- end -}}
+{{- if not $description -}}
+  {{- $description = .Site.Params.description -}}
+{{- end -}}
 <!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{title}}</title>
-  <meta name="description" content="{{description}}">
+  <title>{{ $pageTitle }}</title>
+  <meta name="description" content="{{ $description }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
-  <link rel="stylesheet" href="/assets/site.css">
+  {{- with resources.Get "css/site.css" -}}
+    {{- $siteCSS := . | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $siteCSS.RelPermalink }}" integrity="{{ $siteCSS.Data.Integrity }}">
+  {{- end -}}
   <script src="https://unpkg.com/@knadh/oat/oat.min.js" defer></script>
 </head>
 <body>
   <a
-    href="{{{githubUrl}}}"
+    href="{{ .Site.Params.githubUrl }}"
     class="github-corner"
     target="_blank"
     rel="noreferrer"
@@ -34,13 +49,13 @@
   </a>
   <header role="banner">
     <nav aria-label="Navegacao principal">
-      <a href="/" data-brand>papodado.monique.dev</a>
-      <a href="/projects"{{#isHome}} aria-current="page"{{/isHome}}>Projetos</a>
-      <a href="{{{courseUrl}}}" target="_blank" rel="noreferrer">Pagina do curso</a>
+      <a href="/" data-brand>{{ .Site.Params.brand }}</a>
+      <a href="/projects/"{{ if $isProjects }} aria-current="page"{{ end }}>Projetos</a>
+      <a href="{{ .Site.Params.courseUrl }}" target="_blank" rel="noreferrer">Pagina do curso</a>
     </nav>
   </header>
   <main>
-    {{{content}}}
+    {{ block "main" . }}{{ end }}
   </main>
   <footer>
     <small>Monique Oliveira | PapoDado</small>

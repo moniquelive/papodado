@@ -1,0 +1,11 @@
+baseURL = "https://papodado.monique.dev/"
+languageCode = "pt-BR"
+title = "PapoDado | Projetos"
+disableKinds = ["taxonomy", "term"]
+
+[params]
+description = "Projetos do curso PapoDado."
+brand = "papodado.monique.dev"
+siteUrl = "https://papodado.monique.dev"
+courseUrl = "https://eavparquelage.rj.gov.br/curso/papodado-visualizacao-artistica-de-dados"
+githubUrl = "https://github.com/moniquelive/papodado"

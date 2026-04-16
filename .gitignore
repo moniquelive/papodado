@@ -5,10 +5,11 @@ node_modules/
 dist/
 coverage/
 *.tsbuildinfo
+.hugo_build.lock
 
 # Bundled sketch outputs (source of truth is .ts)
-public/assets/projects/*.js
-public/assets/projects/*.js.map
+static/assets/projects/*.js
+static/assets/projects/*.js.map
 
 # Cloudflare / Wrangler
 .wrangler/

@@ -1,15 +1,10 @@
 # PapoDado project site
 
-This repository is ready to publish course projects for:
+This repository publishes course projects for:
 
 https://eavparquelage.rj.gov.br/curso/papodado-visualizacao-artistica-de-dados
 
-The site uses:
-
-- A modular project registry for a small set of pages (under 5 projects)
-- Mustache templates for layout and page rendering
-- Semantic HTML with a custom themed stylesheet
-- p5.js for standalone project sketches
+The site is now built with Hugo and deployed with Cloudflare Workers static assets.
 
 ## Quick start
 
@@ -25,13 +20,27 @@ The site uses:
    mise run install
    ```
 
-3. Start local worker dev server:
+3. Build sketches + Hugo output and run checks:
+
+   ```bash
+   mise run check
+   ```
+
+4. Start local Worker dev server (serving `dist/` assets):
 
    ```bash
    mise run dev
    ```
 
-## Deploy
+## Build and deploy
+
+Build static output:
+
+```bash
+mise exec -- npm run build
+```
+
+Deploy Worker + static assets:
 
 ```bash
 mise run deploy
@@ -45,31 +54,32 @@ mise exec -- wrangler login
 
 ## Project structure
 
-- `src/index.ts`: app router and HTTP responses.
-- `src/projects/`: one module per project page.
-- `src/site/`: shared renderers and template files.
-- `src/site/templates/`: Mustache templates for layout, pages, and project content.
-- `src/site/styles.ts`: global stylesheet served at `/assets/site.css`.
-- `public/`: static assets served directly (including built sketch bundles).
+- `hugo.toml`: Hugo site configuration and shared params.
+- `content/projects/*.md`: one content file per project page.
+- `layouts/`: Hugo templates and shortcodes.
+- `assets/css/site.css`: global stylesheet processed by Hugo.
+- `assets/projects/*.ts`: TypeScript source for p5 sketches.
+- `static/assets/projects/`: runtime assets copied as-is (images, built sketch JS).
+- `src/index.ts`: minimal Worker entrypoint (`/healthz` + static asset fallback).
+- `dist/`: generated Hugo output used by wrangler assets binding.
 
 Current routes:
 
 - `/` project index
-- `/projects/projeto-01` animated p5.js chart (first draft)
-- `/projects/projeto-02` Flourish embed project
+- `/projects/` projects list
+- `/projects/projeto-01/` animated p5.js chart
+- `/projects/projeto-02/` Flourish embed project
 - `/healthz` simple health check
 
 ## Add a new project page
 
-1. Copy `src/projects/project-01.ts` to a new file in `src/projects/`.
-2. Copy `src/site/templates/projects/project-01.mustache` to a new template file.
-3. Update `slug`, `title`, `summary`, and point `render()` to the new template import.
-4. Import the new module in `src/projects/index.ts` and add it to the `projects` array.
+1. Create `content/projects/<slug>.md` with front matter (`title`, `summary`, `status`, `weight`).
+2. Use existing shortcodes from `layouts/shortcodes/` (or add a new one if needed).
+3. Keep `status: "published"` for live pages.
+4. Run checks:
 
-Run checks:
+   ```bash
+   mise run check
+   ```
 
-```bash
-mise run check
-```
-
-Project sketches are authored in TypeScript (for example `public/assets/projects/projeto-01.ts`) and bundled to browser-ready JS via `npm run build:sketches`.
+Sketches are authored in TypeScript (for example `assets/projects/projeto-01.ts`) and bundled to browser-ready JS in `static/assets/projects/` via `npm run build:sketches`.

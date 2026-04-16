@@ -1,18 +1,10 @@
-type AssetsBinding = {
-  fetch: (request: Request) => Promise<Response>;
-};
-
-type WorkerEnv = {
-  ASSETS?: AssetsBinding;
-};
-
 const textHeaders = {
   "content-type": "text/plain; charset=utf-8",
   "cache-control": "no-store",
 };
 
 export default {
-  async fetch(request: Request, env: WorkerEnv): Promise<Response> {
+  async fetch(request, env) {
     const url = new URL(request.url);
 
     if (url.pathname === "/healthz") {

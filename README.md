@@ -58,9 +58,9 @@ mise exec -- wrangler login
 - `content/projects/*.md`: one content file per project page.
 - `layouts/`: Hugo templates and shortcodes.
 - `assets/css/site.css`: global stylesheet processed by Hugo.
-- `assets/projects/*.ts`: TypeScript source for p5 sketches.
+- `assets/projects/*.js`: JavaScript source for p5 sketches.
 - `static/assets/projects/`: runtime assets copied as-is (images, built sketch JS).
-- `src/index.ts`: minimal Worker entrypoint (`/healthz` + static asset fallback).
+- `src/index.js`: minimal Worker entrypoint (`/healthz` + static asset fallback).
 - `dist/`: generated Hugo output used by wrangler assets binding.
 
 Current routes:
@@ -90,4 +90,4 @@ Current routes:
 
 Current templates use canonical, Open Graph, and Twitter metadata from `layouts/_default/baseof.html`.
 
-Sketches are authored in TypeScript (for example `assets/projects/projeto-01.ts`) and bundled to browser-ready JS in `static/assets/projects/` via `npm run build:sketches`.
+Sketches are authored in JavaScript (for example `assets/projects/projeto-01.js`) and bundled to browser-ready JS in `static/assets/projects/` via `npm run build:sketches`.

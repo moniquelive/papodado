@@ -12,16 +12,16 @@
 
 ## Architecture
 
-- Runtime entrypoint: `src/index.ts`
+- Runtime entrypoint: `src/index.js`
 - Site content: `content/projects/*.md`
 - Shared page rendering: `layouts/*` and `layouts/shortcodes/*`
 - Static assets: `static/*` (copied to `dist/` by Hugo, served by `[assets]` in `wrangler.toml`).
-- p5 project code is TypeScript-first under `assets/projects/*.ts` and bundled to browser JS in `static/assets/projects/`.
+- p5 project code is JavaScript-first under `assets/projects/*.js` and bundled to browser JS in `static/assets/projects/`.
 
 ## p5 sketches
 
-- Keep sketch code modular with typed helpers (`*.constants.ts`, `*.geometry.ts`, `*.math.ts`, `*.primitives.ts`, `*.story.ts`, `*.types.ts`).
-- Treat generated `static/assets/projects/*.js` as build artifacts; make source changes in `.ts` files.
+- Keep sketch code modular with helper modules (`*.constants.js`, `*.geometry.js`, `*.math.js`, `*.primitives.js`, `*.story.js`).
+- Treat generated `static/assets/projects/*.js` as build artifacts; make source changes in `assets/projects/*.js` files.
 - Prefer eased motion curves over linear animation for visual storytelling.
 - Keep text rendered inside sketches aligned with the site body font.
 

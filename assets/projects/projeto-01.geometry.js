@@ -1,18 +1,13 @@
-import type { Bounds, Geometry, Years } from "./projeto-01.types";
 import { clamp } from "./projeto-01.math";
-
-export const getDimensions = (hostWidth: number): Bounds => {
+const getDimensions = (hostWidth) => {
   const width = clamp(hostWidth, 320, 1280);
   const height = Math.round(clamp(width * 0.62, 360, 760));
-
   return { width, height };
 };
-
-export const yearToX = (year: number, xOrigin: number, xGoal: number, years: Years): number => {
-  return ((year - years.start) / (years.goal - years.start)) * (xGoal - xOrigin) + xOrigin;
+const yearToX = (year, xOrigin, xGoal, years) => {
+  return (year - years.start) / (years.goal - years.start) * (xGoal - xOrigin) + xOrigin;
 };
-
-export const getGeometry = (canvas: Bounds, years: Years): Geometry => {
+const getGeometry = (canvas, years) => {
   const sidePadFactor = 0.48;
   const maxSideByHeight = Math.round(canvas.height * 0.42);
   const maxSideByWidth = Math.round((canvas.width - 46) / (1.25 + sidePadFactor * 2));
@@ -32,7 +27,6 @@ export const getGeometry = (canvas: Bounds, years: Years): Geometry => {
   const xRight = Math.min(canvas.width - 18, xGoal + sidePad);
   const yTopArrow = Math.max(18, yTop - topPad);
   const yBottomArrow = Math.min(canvas.height - 20, yAxis + side + bottomPad);
-
   return {
     xOrigin,
     xPivot,
@@ -43,6 +37,11 @@ export const getGeometry = (canvas: Bounds, years: Years): Geometry => {
     xLeft,
     xRight,
     yTopArrow,
-    yBottomArrow,
+    yBottomArrow
   };
+};
+export {
+  getDimensions,
+  getGeometry,
+  yearToX
 };

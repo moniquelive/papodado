@@ -4,10 +4,9 @@ node_modules/
 # Build artifacts
 dist/
 coverage/
-*.tsbuildinfo
 .hugo_build.lock
 
-# Bundled sketch outputs (source of truth is .ts)
+# Bundled sketch outputs (source of truth is assets/projects/*.js)
 static/assets/projects/*.js
 static/assets/projects/*.js.map
 

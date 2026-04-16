@@ -5,6 +5,9 @@ wrangler = "4.83.0"
 [tasks.install]
 run = "mise install"
 
+[tasks.clean]
+run = "rm -rf dist resources .wrangler .hugo_build.lock assets/jsconfig.json"
+
 [tasks.build]
 run = "hugo --gc --minify --cleanDestinationDir --destination dist"
 

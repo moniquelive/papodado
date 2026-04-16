@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build:sketches": "esbuild assets/projects/projeto-01.ts --bundle --format=iife --platform=browser --target=es2020 --outfile=static/assets/projects/projeto-01.js",
-    "build:hugo": "hugo --minify --destination dist",
+    "build:hugo": "hugo --gc --minify --cleanDestinationDir --destination dist",
     "build": "npm run build:sketches && npm run build:hugo",
     "dev": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",

@@ -4,7 +4,7 @@
 {{- if eq $status "published" -}}
   {{- $statusLabel = "Publicado" -}}
 {{- end -}}
-<p><a href="/">Voltar para o indice</a></p>
+<p><a href="{{ "/" | relURL }}">Voltar para o indice</a></p>
 <section>
   <header>
     <p><small>{{ $statusLabel }}</small></p>

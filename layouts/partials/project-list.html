@@ -1,9 +1,14 @@
-{{- $projects := where .Site.RegularPages "Section" "projects" -}}
-{{- $projects = where $projects "Params.status" "published" -}}
-{{- $projects = sort $projects "Params.weight" "asc" -}}
-{{- if gt (len $projects) 0 -}}
+{{- $projects := sort (where .Site.RegularPages "Section" "projects") "Weight" "asc" -}}
+{{- $publishedProjects := slice -}}
+{{- range $projects -}}
+  {{- $status := lower (default "draft" .Params.status) -}}
+  {{- if eq $status "published" -}}
+    {{- $publishedProjects = $publishedProjects | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- if gt (len $publishedProjects) 0 -}}
 <ul data-project-list>
-  {{- range $projects -}}
+  {{- range $publishedProjects -}}
   <li>
     <article data-project-card>
       <header>

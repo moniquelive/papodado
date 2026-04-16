@@ -1,6 +1,8 @@
 baseURL = "https://papodado.monique.dev/"
 languageCode = "pt-BR"
-title = "PapoDado | Projetos"
+defaultContentLanguage = "pt-br"
+title = "PapoDado"
+enableRobotsTXT = true
 disableKinds = ["taxonomy", "term"]
 
 [params]

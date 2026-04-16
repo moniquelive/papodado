@@ -73,13 +73,21 @@ Current routes:
 
 ## Add a new project page
 
-1. Create `content/projects/<slug>.md` with front matter (`title`, `summary`, `status`, `weight`).
-2. Use existing shortcodes from `layouts/shortcodes/` (or add a new one if needed).
-3. Keep `status: "published"` for live pages.
-4. Run checks:
+1. Scaffold with the project archetype:
+
+   ```bash
+   mise exec -- npx hugo new content/projects/<slug>.md
+   ```
+
+2. Fill front matter (`title`, `summary`, `status`, `weight`) and page content.
+3. Use existing shortcodes from `layouts/shortcodes/` (or add a new one if needed).
+4. Keep `status: "published"` for live pages.
+5. Run checks:
 
    ```bash
    mise run check
    ```
+
+Current templates use canonical, Open Graph, and Twitter metadata from `layouts/_default/baseof.html`.
 
 Sketches are authored in TypeScript (for example `assets/projects/projeto-01.ts`) and bundled to browser-ready JS in `static/assets/projects/` via `npm run build:sketches`.

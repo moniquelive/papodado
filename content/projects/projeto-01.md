@@ -12,6 +12,8 @@ weight: 1
   aria_label="Grafico autobiografico com area azul entre 1977 e 2017 abaixo do eixo e area rosa crescente ate 2027 acima do eixo."
   original_src="/assets/projects/projeto-01-original.jpeg"
   original_alt="Foto da versao fisica original do Projeto 01, desenhada em caderno quadriculado."
+  original_width="4032"
+  original_height="3024"
   original_caption="Versao fisica original do exercicio"
   sketch_src="/assets/projects/projeto-01.js"
 >}}

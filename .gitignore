@@ -5,10 +5,7 @@ node_modules/
 dist/
 coverage/
 .hugo_build.lock
-
-# Bundled sketch outputs (source of truth is assets/projects/*.js)
-static/assets/projects/*.js
-static/assets/projects/*.js.map
+assets/jsconfig.json
 
 # Cloudflare / Wrangler
 .wrangler/

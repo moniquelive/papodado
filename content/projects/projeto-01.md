@@ -15,5 +15,5 @@ weight: 1
   original_width="4032"
   original_height="3024"
   original_caption="Versao fisica original do exercicio"
-  sketch_src="/assets/projects/projeto-01.js"
+  sketch_entry="projects/projeto-01.js"
 >}}

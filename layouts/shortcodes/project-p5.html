@@ -1,3 +1,4 @@
+{{- $sketchEntry := .Get "sketch_entry" -}}
 {{- $sketchSrc := .Get "sketch_src" -}}
 <section data-project-stage>
   <h2>{{ .Get "heading" }}</h2>
@@ -26,8 +27,16 @@
 <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js" defer></script>
 {{- .Page.Scratch.Set "p5-script-loaded" true -}}
 {{- end -}}
-{{- $sketchKey := printf "p5-sketch:%s" $sketchSrc -}}
-{{- if and $sketchSrc (not (.Page.Scratch.Get $sketchKey)) -}}
+{{- $sketchKey := printf "p5-sketch:%s:%s" $sketchEntry $sketchSrc -}}
+{{- if not (.Page.Scratch.Get $sketchKey) -}}
+  {{- if $sketchEntry -}}
+    {{- with resources.Get $sketchEntry -}}
+      {{- $targetPath := printf "assets/%s" $sketchEntry -}}
+      {{- $bundle := . | js.Build (dict "targetPath" $targetPath "format" "iife" "minify" true) | fingerprint -}}
+<script src="{{ $bundle.RelPermalink }}" integrity="{{ $bundle.Data.Integrity }}" defer></script>
+    {{- end -}}
+  {{- else if $sketchSrc -}}
 <script src="{{ $sketchSrc | relURL }}" defer></script>
-{{- .Page.Scratch.Set $sketchKey true -}}
+  {{- end -}}
+  {{- .Page.Scratch.Set $sketchKey true -}}
 {{- end -}}

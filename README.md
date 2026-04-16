@@ -14,7 +14,7 @@ The site is now built with Hugo and deployed with Cloudflare Workers static asse
    mise install
    ```
 
-2. Install dependencies:
+2. Install pinned tools for this repo:
 
    ```bash
    mise run install
@@ -37,7 +37,7 @@ The site is now built with Hugo and deployed with Cloudflare Workers static asse
 Build static output:
 
 ```bash
-mise exec -- npm run build
+mise run build
 ```
 
 Deploy Worker + static assets:
@@ -58,8 +58,8 @@ mise exec -- wrangler login
 - `content/projects/*.md`: one content file per project page.
 - `layouts/`: Hugo templates and shortcodes.
 - `assets/css/site.css`: global stylesheet processed by Hugo.
-- `assets/projects/*.js`: JavaScript source for p5 sketches.
-- `static/assets/projects/`: runtime assets copied as-is (images, built sketch JS).
+- `assets/projects/*.js`: JavaScript source for p5 sketches, bundled by Hugo resources.
+- `static/assets/projects/`: runtime assets copied as-is (images and other static files).
 - `src/index.js`: minimal Worker entrypoint (`/healthz` + static asset fallback).
 - `dist/`: generated Hugo output used by wrangler assets binding.
 
@@ -76,7 +76,7 @@ Current routes:
 1. Scaffold with the project archetype:
 
    ```bash
-   mise exec -- npx hugo new content/projects/<slug>.md
+   mise exec -- hugo new content/projects/<slug>.md
    ```
 
 2. Fill front matter (`title`, `summary`, `status`, `weight`) and page content.
@@ -90,4 +90,4 @@ Current routes:
 
 Current templates use canonical, Open Graph, and Twitter metadata from `layouts/_default/baseof.html`.
 
-Sketches are authored in JavaScript (for example `assets/projects/projeto-01.js`) and bundled to browser-ready JS in `static/assets/projects/` via `npm run build:sketches`.
+Sketches are authored in JavaScript (for example `assets/projects/projeto-01.js`) and bundled to browser-ready JS by Hugo (`js.Build`) during `mise run build`.

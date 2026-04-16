@@ -1,14 +1,18 @@
 [tools]
-node = "22"
+hugo = "0.152.2"
+wrangler = "4.81.1"
 
 [tasks.install]
-run = "npm install"
+run = "mise install"
+
+[tasks.build]
+run = "hugo --gc --minify --cleanDestinationDir --destination dist"
 
 [tasks.dev]
-run = "npm run dev"
+run = "mise run build && wrangler dev"
 
 [tasks.check]
-run = "npm run check"
+run = "mise run build"
 
 [tasks.deploy]
-run = "npm run deploy"
+run = "mise run build && wrangler deploy"

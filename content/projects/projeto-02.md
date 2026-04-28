@@ -5,6 +5,14 @@ status: "published"
 weight: 2
 ---
 
+{{< project-notebook
+  heading="Notebook Jupyter (com saidas)"
+  description="Fluxo completo do Projeto 02 no notebook, incluindo limpeza dos dados da aba 1.1.3 e grafico final empilhado por capital."
+  src="/assets/projects/projeto-02-notebook.html"
+  ipynb_src="/assets/projects/projeto-02.ipynb"
+  frame_title="Notebook Projeto 02 com saidas"
+>}}
+
 {{< project-p5
   heading="Projeto 02 em p5.js"
   description="Mapa do Brasil em perspectiva com histogramas de Homem e Mulher sobre cada capital. A animacao entra em cena em uma passada; clique para replay."

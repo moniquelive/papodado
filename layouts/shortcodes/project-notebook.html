@@ -1,0 +1,19 @@
+<section data-project-stage>
+  <h2>{{ .Get "heading" }}</h2>
+  <p>{{ .Get "description" }}</p>
+  <div data-notebook-wrapper>
+    <iframe
+      src="{{ .Get "src" | relURL }}"
+      title="{{ .Get "frame_title" }}"
+      loading="lazy"
+      data-notebook-frame
+    ></iframe>
+  </div>
+  <p data-notebook-links>
+    <a href="{{ .Get "src" | relURL }}" target="_blank" rel="noopener noreferrer">Abrir notebook renderizado</a>
+    {{- with .Get "ipynb_src" }}
+      &nbsp;|&nbsp;
+      <a href="{{ . | relURL }}" target="_blank" rel="noopener noreferrer">Baixar arquivo .ipynb</a>
+    {{- end }}
+  </p>
+</section>

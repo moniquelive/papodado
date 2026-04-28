@@ -26,6 +26,8 @@ The site is now built with Hugo and deployed with Cloudflare Workers static asse
    mise run check
    ```
 
+   This also refreshes the Projeto 02 notebook embed (`static/assets/projects/projeto-02-notebook.html`) from `planilhas IBGE/Projeto-02.ipynb`.
+
 4. Start local Worker dev server (serving `dist/` assets):
 
    ```bash
@@ -33,6 +35,12 @@ The site is now built with Hugo and deployed with Cloudflare Workers static asse
    ```
 
 ## Build and deploy
+
+Refresh only the Projeto 02 notebook embed assets:
+
+```bash
+mise run notebook-projeto-02
+```
 
 Build static output:
 

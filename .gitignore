@@ -6,6 +6,7 @@ dist/
 coverage/
 .hugo_build.lock
 assets/jsconfig.json
+public/
 
 # Cloudflare / Wrangler
 .wrangler/

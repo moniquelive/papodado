@@ -8,8 +8,11 @@ run = "mise install"
 [tasks.clean]
 run = "rm -rf dist resources .wrangler .hugo_build.lock assets/jsconfig.json"
 
+[tasks.notebook-projeto-02]
+run = "mise exec -- python scripts/export_projeto_02_notebook.py"
+
 [tasks.build]
-run = "hugo --gc --minify --cleanDestinationDir --destination dist"
+run = "mise run notebook-projeto-02 && hugo --gc --minify --cleanDestinationDir --destination dist"
 
 [tasks.dev]
 run = "mise run build && wrangler dev"

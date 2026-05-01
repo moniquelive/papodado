@@ -12,7 +12,7 @@ export const COLORS = {
   ocean: [16, 11, 24],
   mapFill: [35, 24, 48, 232],
   mapStroke: [113, 78, 134, 118],
-  mapGlow: [238, 140, 184, 34],
+  mapGlow: [238, 140, 184, 22],
   text: [250, 239, 250],
   textMuted: [205, 178, 213],
   panel: [24, 16, 34, 222],
@@ -35,6 +35,6 @@ export const STORY = {
 
 export const FILTERS = [
   { id: "all", label: "todas" },
-  { id: "victims", label: "com vitimas" },
-  { id: "police", label: "acao policial" },
+  { id: "victims", label: "com vítimas" },
+  { id: "police", label: "ação policial" },
 ];

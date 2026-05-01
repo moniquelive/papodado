@@ -298,6 +298,39 @@ main [data-project-stage] h2 {
   margin: 0;
 }
 
+main [data-project-note] {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(240 140 182 / 42%);
+  border-radius: 1rem;
+  background:
+    radial-gradient(110% 150% at 0% 0%, rgb(240 140 182 / 18%) 0%, transparent 58%),
+    radial-gradient(100% 140% at 100% 10%, rgb(122 217 199 / 12%) 0%, transparent 55%),
+    linear-gradient(135deg, rgb(35 22 50 / 92%) 0%, rgb(21 14 31 / 96%) 100%);
+  padding: 1rem 1.05rem;
+  box-shadow: 0 16px 32px rgb(0 0 0 / 22%);
+}
+
+main [data-project-note]::after {
+  content: "";
+  position: absolute;
+  right: -2.2rem;
+  bottom: -2.8rem;
+  width: 8.5rem;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: radial-gradient(circle at center, rgb(248 183 206 / 20%) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+main [data-project-note] p {
+  position: relative;
+  z-index: 1;
+  max-width: 78ch;
+  margin: 0;
+  color: var(--secondary-foreground);
+}
+
 main [data-flourish-wrapper] {
   border: 1px solid var(--border);
   border-radius: 0.95rem;

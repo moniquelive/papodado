@@ -46,3 +46,4 @@
 - Prefer regular CSS cascading to override library styles.
 - Keep the home page on a single dark theme using a feminine palette defined with CSS variables.
 - Use distinct fonts for headings and body text.
+- Use correct Portuguese diacritics in public-facing Portuguese copy, including Markdown content and text drawn inside sketches.

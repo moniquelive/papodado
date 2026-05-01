@@ -11,6 +11,7 @@ import { buildTimeline, normalizeOccurrences, passesFilter } from "./projeto-03.
 import {
   buildLandMask,
   buildProjectedNeighborhoods,
+  findNeighborhoodAtPoint,
   getCanvasBounds,
   getMapLayout,
   parseNeighborhoodGeometry,
@@ -137,7 +138,7 @@ import { createSimulation } from "./projeto-03.simulation";
       p.textAlign(p.CENTER, p.CENTER);
       p.fill(...COLORS.text);
       p.textSize(clamp(canvasBounds.width * 0.028, 16, 25));
-      p.text("Carregando dados estaticos do projeto...", canvasBounds.width * 0.5, canvasBounds.height * 0.48);
+      p.text("Carregando dados estáticos do projeto...", canvasBounds.width * 0.5, canvasBounds.height * 0.48);
       p.pop();
     };
 
@@ -148,10 +149,10 @@ import { createSimulation } from "./projeto-03.simulation";
       p.textAlign(p.CENTER, p.CENTER);
       p.fill(...COLORS.text);
       p.textSize(clamp(canvasBounds.width * 0.028, 16, 25));
-      p.text("Nao foi possivel carregar o projeto.", canvasBounds.width * 0.5, canvasBounds.height * 0.46);
+      p.text("Não foi possível carregar o projeto.", canvasBounds.width * 0.5, canvasBounds.height * 0.46);
       p.fill(...COLORS.textMuted);
       p.textSize(clamp(canvasBounds.width * 0.016, 11, 15));
-      p.text(dataError || "Verifique os arquivos JSON estaticos.", canvasBounds.width * 0.5, canvasBounds.height * 0.53);
+      p.text(dataError || "Verifique os arquivos JSON estáticos.", canvasBounds.width * 0.5, canvasBounds.height * 0.53);
       p.pop();
     };
 
@@ -272,8 +273,8 @@ import { createSimulation } from "./projeto-03.simulation";
       const rowHeight = clamp(canvasBounds.width * 0.022, 17, 24);
       const labels = [
         { color: COLORS.point, label: "registro" },
-        { color: COLORS.victimPoint, label: "com vitimas" },
-        { color: COLORS.policePoint, label: "acao policial" },
+        { color: COLORS.victimPoint, label: "com vítimas" },
+        { color: COLORS.policePoint, label: "ação policial" },
       ];
 
       p.push();
@@ -353,13 +354,72 @@ import { createSimulation } from "./projeto-03.simulation";
       p.textAlign(p.LEFT, p.TOP);
       p.text("arraste/clique no tempo", scrubberX, scrubberY + 13);
       p.textAlign(p.RIGHT, p.TOP);
-      p.text(`${month?.label ?? "--"} | memoria ${STORY.memoryMonths.toFixed(0)} meses`, scrubberX + scrubberWidth, scrubberY + 13);
+      p.text(`${month?.label ?? "--"} | memória ${STORY.memoryMonths.toFixed(0)} meses`, scrubberX + scrubberWidth, scrubberY + 13);
       p.pop();
 
       uiHitAreas.push({
         type: "scrubber",
         rect: { x: scrubberX, y: scrubberY - 16, width: scrubberWidth, height: 32 },
       });
+    };
+
+    const resolveHoveredNeighborhood = () => {
+      if (!layout || isScrubbing) {
+        return null;
+      }
+
+      if (
+        p.mouseX < layout.left ||
+        p.mouseX > layout.left + layout.width ||
+        p.mouseY < layout.top ||
+        p.mouseY > layout.bottom
+      ) {
+        return null;
+      }
+
+      return findNeighborhoodAtPoint({ x: p.mouseX, y: p.mouseY }, projectedNeighborhoods);
+    };
+
+    const drawNeighborhoodTooltip = (neighborhood) => {
+      const name = neighborhood?.name?.trim();
+      if (!name) {
+        return;
+      }
+
+      const region = neighborhood.region?.trim();
+      const textSize = clamp(canvasBounds.width * 0.013, 11, 14);
+      const lineHeight = textSize * 1.45;
+      const lines = region ? [name, region] : [name];
+
+      p.push();
+      p.textFont(FONTS.body);
+      p.textSize(textSize);
+
+      let textWidth = 0;
+      for (let i = 0; i < lines.length; i += 1) {
+        textWidth = Math.max(textWidth, p.textWidth(lines[i]));
+      }
+
+      const boxWidth = textWidth + 22;
+      const boxHeight = lineHeight * lines.length + 15;
+      const x = clamp(p.mouseX + 14, layout.left + 6, layout.left + layout.width - boxWidth - 6);
+      const y = clamp(p.mouseY - boxHeight - 12, layout.top + 6, layout.bottom - boxHeight - 6);
+
+      p.stroke(COLORS.panelStroke[0], COLORS.panelStroke[1], COLORS.panelStroke[2], 210);
+      p.strokeWeight(1);
+      p.fill(COLORS.panel[0], COLORS.panel[1], COLORS.panel[2], 238);
+      p.rect(x, y, boxWidth, boxHeight, 12);
+      p.noStroke();
+      p.fill(...COLORS.text);
+      p.textAlign(p.LEFT, p.TOP);
+      p.text(name, x + 11, y + 8);
+
+      if (region) {
+        p.fill(...COLORS.textMuted);
+        p.text(region, x + 11, y + 8 + lineHeight);
+      }
+
+      p.pop();
     };
 
     const handlePointer = () => {
@@ -492,6 +552,7 @@ import { createSimulation } from "./projeto-03.simulation";
       drawHeader();
       drawLegend();
       drawControls();
+      drawNeighborhoodTooltip(resolveHoveredNeighborhood());
     };
   };
 

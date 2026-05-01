@@ -63,7 +63,7 @@ export const drawReactionLayer = (p, simulation, layout, colors, phase = 0) => {
       const hot = colorMix(colors.coral, colors.magenta, clamp(value * 1.3, 0, 1));
       const cool = colorMix(colors.violet, colors.cyan, shimmer * 0.62);
       const mixed = colorMix(cool, hot, clamp(value * 1.15, 0, 1));
-      const alpha = clamp(16 + value * 182, 0, 205);
+      const alpha = clamp(10 + value * 128, 0, 158);
       const x = layout.left + (col + 0.5) * cellW;
       const y = layout.top + (row + 0.5) * cellH;
       const radius = maxCell * (1.05 + value * 2.35);
@@ -72,7 +72,7 @@ export const drawReactionLayer = (p, simulation, layout, colors, phase = 0) => {
       p.circle(x, y, radius);
 
       if (value > 0.34) {
-        p.fill(colors.coral[0], colors.coral[1], colors.coral[2], clamp(value * 95, 0, 115));
+        p.fill(colors.coral[0], colors.coral[1], colors.coral[2], clamp(value * 54, 0, 70));
         p.circle(x + Math.sin(phase + index * 0.017) * cellW * 0.3, y, radius * 0.42);
       }
     }

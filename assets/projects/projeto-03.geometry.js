@@ -211,6 +211,20 @@ export const buildProjectedNeighborhoods = (layout, bounds, neighborhoods) =>
     };
   });
 
+export const findNeighborhoodAtPoint = (point, projectedNeighborhoods) => {
+  for (let i = projectedNeighborhoods.length - 1; i >= 0; i -= 1) {
+    const feature = projectedNeighborhoods[i];
+
+    for (let j = 0; j < feature.projectedRings.length; j += 1) {
+      if (inBounds(point, feature.boundsList[j]) && pointInRing(point, feature.projectedRings[j])) {
+        return feature;
+      }
+    }
+  }
+
+  return null;
+};
+
 export const buildLandMask = (cols, rows, layout, projectedNeighborhoods) => {
   const mask = new Uint8Array(cols * rows);
 

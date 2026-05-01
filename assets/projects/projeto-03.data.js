@@ -35,7 +35,7 @@ export const normalizeOccurrences = (payload) => {
       dead: Number(row.dead) || 0,
       wounded: Number(row.wounded) || 0,
       victims: Number(row.victims) || 0,
-      mainReason: String(row.mainReason || "Nao identificado"),
+      mainReason: String(row.mainReason || "Não identificado"),
       weight: 1 + (Number(row.victims) || 0) * 0.62 + (row.policeAction ? 0.72 : 0),
     });
   }

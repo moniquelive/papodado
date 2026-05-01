@@ -7,6 +7,8 @@ import {
   OCCURRENCES_PATH,
   STORY,
 } from "./projeto-03.constants";
+import { createMapCamera, isPointInViewport, ZOOM } from "./projeto-03.camera";
+import { drawZoomControls as drawZoomControlPanel, zoomFromSliderY } from "./projeto-03.controls";
 import { buildTimeline, normalizeOccurrences, passesFilter } from "./projeto-03.data";
 import {
   buildLandMask,
@@ -18,17 +20,16 @@ import {
   projectLonLat,
 } from "./projeto-03.geometry";
 import { clamp, easeInOutCubic, formatPtBr } from "./projeto-03.math";
-import { containsPoint, drawButton, drawNeighborhoods, drawReactionLayer } from "./projeto-03.primitives";
+import {
+  containsPoint,
+  drawButton,
+  drawNeighborhoods,
+  drawNeighborhoodTooltip,
+  drawReactionLayer,
+} from "./projeto-03.primitives";
 import { createSimulation } from "./projeto-03.simulation";
 
 (() => {
-  const ZOOM = {
-    min: 1,
-    max: 4,
-    step: 1.28,
-    wheel: 0.0012,
-  };
-
   const sketch = (p) => {
     let canvasBounds = { width: 960, height: 710 };
     let geometrySource = null;
@@ -51,8 +52,8 @@ import { createSimulation } from "./projeto-03.simulation";
     let isScrubbing = false;
     let isZoomSliding = false;
     let isPanning = false;
-    let panStart = { x: 0, y: 0, panX: 0, panY: 0 };
-    let camera = { zoom: 1, panX: 0, panY: 0 };
+    let panStart = null;
+    const camera = createMapCamera();
 
     const getHostWidth = () => {
       const host = document.getElementById(CONTAINER_ID);
@@ -61,63 +62,9 @@ import { createSimulation } from "./projeto-03.simulation";
 
     const currentFilter = () => FILTERS[filterIndex]?.id ?? "all";
 
-    const mapCenter = () => ({
-      x: layout.left + layout.width * 0.5,
-      y: layout.top + layout.height * 0.5,
-    });
-
-    const resetCamera = () => {
-      camera = { zoom: 1, panX: 0, panY: 0 };
-    };
-
-    const constrainCamera = () => {
-      if (!layout || camera.zoom <= ZOOM.min + 1e-4) {
-        camera.zoom = ZOOM.min;
-        camera.panX = 0;
-        camera.panY = 0;
-        return;
-      }
-
-      const maxPanX = ((camera.zoom - 1) * layout.width) * 0.5;
-      const maxPanY = ((camera.zoom - 1) * layout.height) * 0.5;
-      camera.panX = clamp(camera.panX, -maxPanX, maxPanX);
-      camera.panY = clamp(camera.panY, -maxPanY, maxPanY);
-    };
-
-    const screenToMapPoint = (point) => {
-      const center = mapCenter();
-
-      return {
-        x: center.x + (point.x - center.x - camera.panX) / camera.zoom,
-        y: center.y + (point.y - center.y - camera.panY) / camera.zoom,
-      };
-    };
-
-    const setZoomAt = (x, y, nextZoom) => {
-      if (!layout) {
-        return;
-      }
-
-      const zoom = clamp(nextZoom, ZOOM.min, ZOOM.max);
-      const center = mapCenter();
-      const anchor = screenToMapPoint({ x, y });
-      camera.zoom = zoom;
-      camera.panX = x - center.x - (anchor.x - center.x) * camera.zoom;
-      camera.panY = y - center.y - (anchor.y - center.y) * camera.zoom;
-      constrainCamera();
-    };
-
-    const isPointInMapViewport = (x, y) =>
-      layout && x >= layout.left && x <= layout.left + layout.width && y >= layout.top && y <= layout.bottom;
+    const isPointInMapViewport = (x, y) => isPointInViewport(layout, x, y);
 
     const isPointerOverUi = () => uiHitAreas.some((area) => containsPoint(area.rect, p.mouseX, p.mouseY));
-
-    const applyMapCamera = () => {
-      const center = mapCenter();
-      p.translate(center.x + camera.panX, center.y + camera.panY);
-      p.scale(camera.zoom);
-      p.translate(-center.x, -center.y);
-    };
 
     const gridSizeForLayout = () => {
       const cols = Math.round(clamp(layout.width / 8, 72, 152));
@@ -153,7 +100,7 @@ import { createSimulation } from "./projeto-03.simulation";
       }
 
       layout = getMapLayout(canvasBounds, geometrySource.bounds);
-      resetCamera();
+      camera.reset();
       projectedNeighborhoods = buildProjectedNeighborhoods(layout, geometrySource.bounds, geometrySource.neighborhoods);
 
       const gridSize = gridSizeForLayout();
@@ -181,7 +128,7 @@ import { createSimulation } from "./projeto-03.simulation";
         }
 
         if (!occurrencesResponse.ok) {
-          throw new Error(`Ocorrencias HTTP ${occurrencesResponse.status}`);
+          throw new Error(`Ocorrências HTTP ${occurrencesResponse.status}`);
         }
 
         const bairros = await bairrosResponse.json();
@@ -220,7 +167,7 @@ import { createSimulation } from "./projeto-03.simulation";
       context.beginPath();
       context.rect(layout.left, layout.top, layout.width, layout.height);
       context.clip();
-      applyMapCamera();
+      camera.applyTransform(p, layout);
 
       if (mapLayer) {
         p.image(mapLayer, 0, 0);
@@ -456,71 +403,12 @@ import { createSimulation } from "./projeto-03.simulation";
       });
     };
 
-    const drawZoomButton = (rect, label, active = false) => {
-      p.push();
-      p.stroke(...COLORS.panelStroke);
-      p.strokeWeight(1);
-      p.fill(active ? COLORS.magenta[0] : COLORS.panel[0], active ? COLORS.magenta[1] : COLORS.panel[1], active ? COLORS.magenta[2] : COLORS.panel[2], active ? 230 : 216);
-      p.rect(rect.x, rect.y, rect.width, rect.height, 9);
-      p.noStroke();
-      p.fill(...COLORS.text);
-      p.textFont(FONTS.body);
-      p.textSize(clamp(canvasBounds.width * 0.013, 11, 14));
-      p.textAlign(p.CENTER, p.CENTER);
-      p.text(label, rect.x + rect.width * 0.5, rect.y + rect.height * 0.5 - 1);
-      p.pop();
-    };
-
-    const zoomFromSliderY = (y, track) => {
-      const amount = clamp((track.y + track.height - y) / track.height, 0, 1);
-      return ZOOM.min + amount * (ZOOM.max - ZOOM.min);
-    };
-
     const updateZoomFromSlider = (area) => {
-      const center = mapCenter();
-      setZoomAt(center.x, center.y, zoomFromSliderY(p.mouseY, area.rect));
+      camera.setZoomAtCenter(layout, zoomFromSliderY(p.mouseY, area.rect));
     };
 
     const drawZoomControls = () => {
-      const controlWidth = clamp(canvasBounds.width * 0.038, 30, 38);
-      const buttonSize = controlWidth;
-      const trackHeight = clamp(layout.height * 0.24, 92, 132);
-      const gap = 7;
-      const totalHeight = buttonSize * 3 + trackHeight + gap * 4;
-      const x = layout.left + layout.width - controlWidth - 14;
-      const y = clamp(layout.top + layout.height * 0.34, layout.top + 92, layout.bottom - totalHeight - 14);
-      const plusRect = { x, y, width: buttonSize, height: buttonSize };
-      const track = { x: x + controlWidth * 0.5 - 8, y: y + buttonSize + gap, width: 16, height: trackHeight };
-      const minusRect = { x, y: track.y + track.height + gap, width: buttonSize, height: buttonSize };
-      const resetRect = { x, y: minusRect.y + buttonSize + gap, width: buttonSize, height: buttonSize };
-      const zoomAmount = (camera.zoom - ZOOM.min) / (ZOOM.max - ZOOM.min);
-      const thumbY = track.y + track.height - clamp(zoomAmount, 0, 1) * track.height;
-
-      p.push();
-      p.noStroke();
-      p.fill(COLORS.panel[0], COLORS.panel[1], COLORS.panel[2], 132);
-      p.rect(x - 6, y - 6, controlWidth + 12, totalHeight + 12, 14);
-      p.stroke(COLORS.panelStroke[0], COLORS.panelStroke[1], COLORS.panelStroke[2], 165);
-      p.strokeWeight(2);
-      p.line(track.x + track.width * 0.5, track.y, track.x + track.width * 0.5, track.y + track.height);
-      p.stroke(COLORS.magenta[0], COLORS.magenta[1], COLORS.magenta[2], 218);
-      p.strokeWeight(3.4);
-      p.line(track.x + track.width * 0.5, track.y + track.height, track.x + track.width * 0.5, thumbY);
-      p.noStroke();
-      p.fill(...COLORS.text);
-      p.circle(track.x + track.width * 0.5, thumbY, clamp(canvasBounds.width * 0.014, 11, 16));
-      p.fill(COLORS.magenta[0], COLORS.magenta[1], COLORS.magenta[2], 235);
-      p.circle(track.x + track.width * 0.5, thumbY, clamp(canvasBounds.width * 0.007, 5, 8));
-      p.pop();
-
-      drawZoomButton(plusRect, "+", camera.zoom > ZOOM.min + 0.04);
-      drawZoomButton(minusRect, "-", camera.zoom > ZOOM.min + 0.04);
-      drawZoomButton(resetRect, "1x", camera.zoom <= ZOOM.min + 0.04);
-
-      uiHitAreas.push({ type: "zoom-in", rect: plusRect });
-      uiHitAreas.push({ type: "zoom-slider", rect: { x: track.x - 12, y: track.y - 6, width: track.width + 24, height: track.height + 12 } });
-      uiHitAreas.push({ type: "zoom-out", rect: minusRect });
-      uiHitAreas.push({ type: "zoom-reset", rect: resetRect });
+      uiHitAreas.push(...drawZoomControlPanel(p, layout, canvasBounds, camera.state, COLORS, FONTS));
     };
 
     const resolveHoveredNeighborhood = () => {
@@ -532,49 +420,7 @@ import { createSimulation } from "./projeto-03.simulation";
         return null;
       }
 
-      return findNeighborhoodAtPoint(screenToMapPoint({ x: p.mouseX, y: p.mouseY }), projectedNeighborhoods);
-    };
-
-    const drawNeighborhoodTooltip = (neighborhood) => {
-      const name = neighborhood?.name?.trim();
-      if (!name) {
-        return;
-      }
-
-      const region = neighborhood.region?.trim();
-      const textSize = clamp(canvasBounds.width * 0.013, 11, 14);
-      const lineHeight = textSize * 1.45;
-      const lines = region ? [name, region] : [name];
-
-      p.push();
-      p.textFont(FONTS.body);
-      p.textSize(textSize);
-
-      let textWidth = 0;
-      for (let i = 0; i < lines.length; i += 1) {
-        textWidth = Math.max(textWidth, p.textWidth(lines[i]));
-      }
-
-      const boxWidth = textWidth + 22;
-      const boxHeight = lineHeight * lines.length + 15;
-      const x = clamp(p.mouseX + 14, layout.left + 6, layout.left + layout.width - boxWidth - 6);
-      const y = clamp(p.mouseY - boxHeight - 12, layout.top + 6, layout.bottom - boxHeight - 6);
-
-      p.stroke(COLORS.panelStroke[0], COLORS.panelStroke[1], COLORS.panelStroke[2], 210);
-      p.strokeWeight(1);
-      p.fill(COLORS.panel[0], COLORS.panel[1], COLORS.panel[2], 238);
-      p.rect(x, y, boxWidth, boxHeight, 12);
-      p.noStroke();
-      p.fill(...COLORS.text);
-      p.textAlign(p.LEFT, p.TOP);
-      p.text(name, x + 11, y + 8);
-
-      if (region) {
-        p.fill(...COLORS.textMuted);
-        p.text(region, x + 11, y + 8 + lineHeight);
-      }
-
-      p.pop();
+      return findNeighborhoodAtPoint(camera.screenToMapPoint(layout, { x: p.mouseX, y: p.mouseY }), projectedNeighborhoods);
     };
 
     const handlePointer = () => {
@@ -607,19 +453,17 @@ import { createSimulation } from "./projeto-03.simulation";
         }
 
         if (area.type === "zoom-in") {
-          const center = mapCenter();
-          setZoomAt(center.x, center.y, camera.zoom * ZOOM.step);
+          camera.setZoomAtCenter(layout, camera.state.zoom * ZOOM.step);
           return false;
         }
 
         if (area.type === "zoom-out") {
-          const center = mapCenter();
-          setZoomAt(center.x, center.y, camera.zoom / ZOOM.step);
+          camera.setZoomAtCenter(layout, camera.state.zoom / ZOOM.step);
           return false;
         }
 
         if (area.type === "zoom-reset") {
-          resetCamera();
+          camera.reset();
           return false;
         }
 
@@ -630,9 +474,9 @@ import { createSimulation } from "./projeto-03.simulation";
         }
       }
 
-      if (camera.zoom > ZOOM.min + 0.01 && isPointInMapViewport(p.mouseX, p.mouseY)) {
+      if (camera.isZoomed() && isPointInMapViewport(p.mouseX, p.mouseY)) {
         isPanning = true;
-        panStart = { x: p.mouseX, y: p.mouseY, panX: camera.panX, panY: camera.panY };
+        panStart = camera.startPan(p.mouseX, p.mouseY);
         return false;
       }
 
@@ -648,29 +492,26 @@ import { createSimulation } from "./projeto-03.simulation";
     };
 
     const handleDrag = () => {
-      if (!isScrubbing) {
-        if (isZoomSliding) {
-          const slider = uiHitAreas.find((area) => area.type === "zoom-slider");
-          if (slider) {
-            updateZoomFromSlider(slider);
-          }
-
-          return false;
-        }
-
-        if (isPanning) {
-          camera.panX = panStart.panX + p.mouseX - panStart.x;
-          camera.panY = panStart.panY + p.mouseY - panStart.y;
-          constrainCamera();
-          return false;
+      if (isScrubbing) {
+        const scrubber = uiHitAreas.find((area) => area.type === "scrubber");
+        if (scrubber) {
+          updateScrubberFromPointer(scrubber);
         }
 
         return false;
       }
 
-      const scrubber = uiHitAreas.find((area) => area.type === "scrubber");
-      if (scrubber) {
-        updateScrubberFromPointer(scrubber);
+      if (isZoomSliding) {
+        const slider = uiHitAreas.find((area) => area.type === "zoom-slider");
+        if (slider) {
+          updateZoomFromSlider(slider);
+        }
+
+        return false;
+      }
+
+      if (isPanning && panStart) {
+        camera.updatePan(layout, panStart, p.mouseX, p.mouseY);
       }
 
       return false;
@@ -680,6 +521,7 @@ import { createSimulation } from "./projeto-03.simulation";
       isScrubbing = false;
       isZoomSliding = false;
       isPanning = false;
+      panStart = null;
       return false;
     };
 
@@ -689,7 +531,7 @@ import { createSimulation } from "./projeto-03.simulation";
       }
 
       const delta = Number(event?.deltaY ?? event?.delta ?? 0);
-      setZoomAt(p.mouseX, p.mouseY, camera.zoom * Math.exp(-delta * ZOOM.wheel));
+      camera.zoomByWheel(layout, p.mouseX, p.mouseY, delta);
       return false;
     };
 
@@ -702,7 +544,7 @@ import { createSimulation } from "./projeto-03.simulation";
         canvasElement.style.cursor = "grabbing";
       } else if (isPointerOverUi()) {
         canvasElement.style.cursor = "pointer";
-      } else if (camera.zoom > ZOOM.min + 0.01 && isPointInMapViewport(p.mouseX, p.mouseY)) {
+      } else if (camera.isZoomed() && isPointInMapViewport(p.mouseX, p.mouseY)) {
         canvasElement.style.cursor = "grab";
       } else {
         canvasElement.style.cursor = "pointer";
@@ -774,7 +616,7 @@ import { createSimulation } from "./projeto-03.simulation";
       drawLegend();
       drawControls();
       drawZoomControls();
-      drawNeighborhoodTooltip(resolveHoveredNeighborhood());
+      drawNeighborhoodTooltip(p, resolveHoveredNeighborhood(), layout, canvasBounds, COLORS, FONTS);
       updateCursor();
     };
   };

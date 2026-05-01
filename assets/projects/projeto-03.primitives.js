@@ -96,5 +96,47 @@ export const drawButton = (p, rect, label, colors, active = false) => {
   p.pop();
 };
 
+export const drawNeighborhoodTooltip = (p, neighborhood, layout, canvasBounds, colors, fonts) => {
+  const name = neighborhood?.name?.trim();
+  if (!name) {
+    return;
+  }
+
+  const region = neighborhood.region?.trim();
+  const textSize = clamp(canvasBounds.width * 0.013, 11, 14);
+  const lineHeight = textSize * 1.45;
+  const lines = region ? [name, region] : [name];
+
+  p.push();
+  p.textFont(fonts.body);
+  p.textSize(textSize);
+
+  let textWidth = 0;
+  for (let i = 0; i < lines.length; i += 1) {
+    textWidth = Math.max(textWidth, p.textWidth(lines[i]));
+  }
+
+  const boxWidth = textWidth + 22;
+  const boxHeight = lineHeight * lines.length + 15;
+  const x = clamp(p.mouseX + 14, layout.left + 6, layout.left + layout.width - boxWidth - 6);
+  const y = clamp(p.mouseY - boxHeight - 12, layout.top + 6, layout.bottom - boxHeight - 6);
+
+  p.stroke(colors.panelStroke[0], colors.panelStroke[1], colors.panelStroke[2], 210);
+  p.strokeWeight(1);
+  p.fill(colors.panel[0], colors.panel[1], colors.panel[2], 238);
+  p.rect(x, y, boxWidth, boxHeight, 12);
+  p.noStroke();
+  p.fill(...colors.text);
+  p.textAlign(p.LEFT, p.TOP);
+  p.text(name, x + 11, y + 8);
+
+  if (region) {
+    p.fill(...colors.textMuted);
+    p.text(region, x + 11, y + 8 + lineHeight);
+  }
+
+  p.pop();
+};
+
 export const containsPoint = (rect, x, y) =>
   x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height;

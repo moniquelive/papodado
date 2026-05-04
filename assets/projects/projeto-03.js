@@ -19,7 +19,7 @@ import {
   parseNeighborhoodGeometry,
   projectLonLat,
 } from "./projeto-03.geometry";
-import { clamp, easeInOutCubic, formatPtBr } from "./projeto-03.math";
+import { clamp, easeInOutCubic } from "./projeto-03.math";
 import {
   containsPoint,
   drawButton,
@@ -28,6 +28,7 @@ import {
   drawReactionLayer,
 } from "./projeto-03.primitives";
 import { createSimulation } from "./projeto-03.simulation";
+import { drawProjectHeader, drawProjectLegend } from "./projeto-03.ui";
 
 (() => {
   const sketch = (p) => {
@@ -314,59 +315,19 @@ import { createSimulation } from "./projeto-03.simulation";
     const drawHeader = () => {
       const monthIndex = Math.min(timeline.months.length - 1, Math.floor(cursorMonth));
       const month = timeline.months[monthIndex];
-      const titleSize = clamp(canvasBounds.width * 0.036, 22, 40);
-
-      p.push();
-      p.textFont(FONTS.heading);
-      p.textAlign(p.LEFT, p.TOP);
-      p.fill(...COLORS.text);
-      p.textSize(titleSize);
-      p.text("Manchas que aprendem", layout.left, 16);
-
-      p.textFont(FONTS.body);
-      p.textSize(clamp(canvasBounds.width * 0.014, 11, 15));
-      p.fill(...COLORS.textMuted);
-      p.text(
-        `${month?.label ?? "--"} | ${formatPtBr(countFilteredMonth(monthIndex))} registros no filtro | ${formatPtBr(occurrenceSource.length)} no recorte`,
-        layout.left,
-        22 + titleSize,
-      );
-      p.pop();
-    };
-
-    const drawLegend = () => {
-      const x = layout.left + layout.width - clamp(canvasBounds.width * 0.245, 174, 260);
-      const y = layout.top + 12;
-      const width = clamp(canvasBounds.width * 0.23, 166, 250);
-      const rowHeight = clamp(canvasBounds.width * 0.022, 17, 24);
-      const labels = [
-        { color: COLORS.point, label: "registro" },
-        { color: COLORS.victimPoint, label: "com vítimas" },
-        { color: COLORS.policePoint, label: "ação policial" },
-      ];
-
-      p.push();
-      p.stroke(...COLORS.panelStroke);
-      p.strokeWeight(1);
-      p.fill(...COLORS.panel);
-      p.rect(x, y, width, rowHeight * 4.15, 16);
-      p.noStroke();
-      p.textFont(FONTS.body);
-      p.textSize(clamp(canvasBounds.width * 0.013, 10, 13));
-      p.fill(...COLORS.textMuted);
-      p.textAlign(p.LEFT, p.TOP);
-      p.text("sementes", x + 13, y + 9);
-
-      for (let i = 0; i < labels.length; i += 1) {
-        const item = labels[i];
-        const rowY = y + 28 + i * rowHeight;
-        p.fill(item.color[0], item.color[1], item.color[2], 230);
-        p.circle(x + 19, rowY + 6, 6);
-        p.fill(...COLORS.text);
-        p.text(item.label, x + 31, rowY - 1);
-      }
-
-      p.pop();
+      drawProjectHeader(p, {
+        layout,
+        canvasBounds,
+        colors: COLORS,
+        fonts: FONTS,
+        monthLabel: month?.label ?? "--",
+        monthCount: countFilteredMonth(monthIndex),
+        totalCount: occurrenceSource.length,
+        filterLabel: FILTERS[filterIndex]?.label ?? "todas",
+        cursorMonth,
+        monthIndex,
+        memoryMonths: STORY.memoryMonths,
+      });
     };
 
     const drawControls = () => {
@@ -655,7 +616,7 @@ import { createSimulation } from "./projeto-03.simulation";
 
       drawMapContent(events);
       drawHeader();
-      drawLegend();
+      drawProjectLegend(p, layout, canvasBounds, COLORS, FONTS);
       drawControls();
       drawZoomControls();
       drawNeighborhoodTooltip(p, resolveHoveredNeighborhood(), layout, canvasBounds, COLORS, FONTS);

@@ -168,7 +168,7 @@ export const getMapLayout = (canvas, bounds) => {
   const centerLatRad = ((bounds.minLat + bounds.maxLat) * 0.5 * Math.PI) / 180;
   const geoRatio = (bounds.lonRange * Math.cos(centerLatRad)) / bounds.latRange;
   const safeRatio = clamp(geoRatio, 1.05, 2.25);
-  const topPad = clamp(canvas.height * 0.085, 44, 72);
+  const topPad = clamp(canvas.height * 0.125, 72, 104);
   const bottomPad = clamp(canvas.height * 0.25, 118, 180);
   const maxWidth = canvas.width * 0.94;
   const maxHeight = canvas.height - topPad - bottomPad;

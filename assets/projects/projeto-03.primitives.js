@@ -1,4 +1,9 @@
-import { clamp, colorMix } from "./projeto-03.math";
+import { clamp, colorRamp, smoothstep } from "./projeto-03.math";
+
+const grainAt = (col, row, salt = 0) => {
+  const value = Math.sin(col * 127.1 + row * 311.7 + salt * 74.7) * 43758.5453123;
+  return value - Math.floor(value);
+};
 
 export const drawNeighborhoods = (surface, neighborhoods, colors) => {
   surface.clear();
@@ -46,6 +51,7 @@ export const drawReactionLayer = (p, simulation, layout, colors, phase = 0) => {
   const cellW = layout.width / cols;
   const cellH = layout.height / rows;
   const maxCell = Math.max(cellW, cellH);
+  const ramp = colors.reactionRamp ?? [];
 
   p.push();
   p.noStroke();
@@ -55,25 +61,34 @@ export const drawReactionLayer = (p, simulation, layout, colors, phase = 0) => {
       const index = row * cols + col;
       const value = simulation.intensityAt(index);
 
-      if (value < 0.03) {
+      if (value < 0.025) {
         continue;
       }
 
       const shimmer = Math.sin(phase + col * 0.19 + row * 0.13) * 0.5 + 0.5;
-      const hot = colorMix(colors.coral, colors.magenta, clamp(value * 1.3, 0, 1));
-      const cool = colorMix(colors.violet, colors.cyan, shimmer * 0.62);
-      const mixed = colorMix(cool, hot, clamp(value * 1.15, 0, 1));
-      const alpha = clamp(10 + value * 128, 0, 158);
+      const rampValue = clamp(value * 0.94 + shimmer * 0.08, 0, 1);
+      const mixed = colorRamp(ramp, rampValue);
+      const bloom = smoothstep(0.06, 0.72, value);
+      const alpha = clamp(12 + bloom * 146, 0, 166);
       const x = layout.left + (col + 0.5) * cellW;
       const y = layout.top + (row + 0.5) * cellH;
-      const radius = maxCell * (1.05 + value * 2.35);
+      const radius = maxCell * (0.9 + bloom * 2.55);
 
       p.fill(mixed[0], mixed[1], mixed[2], alpha);
       p.circle(x, y, radius);
 
-      if (value > 0.34) {
-        p.fill(colors.coral[0], colors.coral[1], colors.coral[2], clamp(value * 54, 0, 70));
-        p.circle(x + Math.sin(phase + index * 0.017) * cellW * 0.3, y, radius * 0.42);
+      if (value > 0.33) {
+        p.fill(colors.coral[0], colors.coral[1], colors.coral[2], clamp(value * 62, 0, 78));
+        p.circle(x + Math.sin(phase + index * 0.017) * cellW * 0.3, y, radius * 0.38);
+      }
+
+      if (value > 0.19 && grainAt(col, row) > 0.47) {
+        const fleck = smoothstep(0.19, 0.84, value) * (0.5 + grainAt(col, row, 1) * 0.5);
+        const offsetX = (grainAt(col, row, 2) - 0.5) * cellW * 1.35;
+        const offsetY = (grainAt(col, row, 3) - 0.5) * cellH * 1.35;
+
+        p.fill(colors.amber[0], colors.amber[1], colors.amber[2], clamp(fleck * 58, 0, 64));
+        p.circle(x + offsetX, y + offsetY, maxCell * clamp(0.22 + fleck * 0.34, 0.22, 0.5));
       }
     }
   }

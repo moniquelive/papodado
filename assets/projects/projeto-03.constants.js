@@ -25,6 +25,13 @@ export const COLORS = {
   violet: [142, 109, 244],
   cyan: [98, 224, 210],
   amber: [246, 194, 138],
+  reactionRamp: [
+    { offset: 0, color: [60, 37, 98] },
+    { offset: 0.24, color: [83, 91, 191] },
+    { offset: 0.48, color: [77, 204, 207] },
+    { offset: 0.72, color: [218, 82, 184] },
+    { offset: 1, color: [255, 130, 144] },
+  ],
 };
 
 export const STORY = {

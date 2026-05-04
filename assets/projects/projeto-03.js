@@ -66,6 +66,13 @@ import { createSimulation } from "./projeto-03.simulation";
 
     const isPointerOverUi = () => uiHitAreas.some((area) => containsPoint(area.rect, p.mouseX, p.mouseY));
 
+    const isCanvasEvent = (event) =>
+      !event?.target || !canvasElement || event.target === canvasElement || canvasElement.contains(event.target);
+
+    const isTouchEvent = (event) => String(event?.type ?? "").startsWith("touch");
+
+    const hasActiveTouchGesture = () => isScrubbing || isZoomSliding || isPanning;
+
     const gridSizeForLayout = () => {
       const cols = Math.round(clamp(layout.width / 8, 72, 152));
       const rows = Math.round(clamp(layout.height / 8, 42, 96));
@@ -423,9 +430,9 @@ import { createSimulation } from "./projeto-03.simulation";
       return findNeighborhoodAtPoint(camera.screenToMapPoint(layout, { x: p.mouseX, y: p.mouseY }), projectedNeighborhoods);
     };
 
-    const handlePointer = () => {
-      if (dataState !== "ready") {
-        return false;
+    const handlePointer = (event) => {
+      if (!isCanvasEvent(event) || dataState !== "ready") {
+        return undefined;
       }
 
       for (let i = 0; i < uiHitAreas.length; i += 1) {
@@ -480,6 +487,10 @@ import { createSimulation } from "./projeto-03.simulation";
         return false;
       }
 
+      if (isTouchEvent(event)) {
+        return undefined;
+      }
+
       isPlaying = !isPlaying;
       return false;
     };
@@ -491,7 +502,11 @@ import { createSimulation } from "./projeto-03.simulation";
       simulation?.reset();
     };
 
-    const handleDrag = () => {
+    const handleDrag = (event) => {
+      if (!isCanvasEvent(event) && !hasActiveTouchGesture()) {
+        return undefined;
+      }
+
       if (isScrubbing) {
         const scrubber = uiHitAreas.find((area) => area.type === "scrubber");
         if (scrubber) {
@@ -514,19 +529,25 @@ import { createSimulation } from "./projeto-03.simulation";
         camera.updatePan(layout, panStart, p.mouseX, p.mouseY);
       }
 
-      return false;
+      return isTouchEvent(event) ? undefined : false;
     };
 
-    const handleRelease = () => {
+    const handleRelease = (event) => {
+      const handledGesture = hasActiveTouchGesture();
+
+      if (!isCanvasEvent(event) && !handledGesture) {
+        return undefined;
+      }
+
       isScrubbing = false;
       isZoomSliding = false;
       isPanning = false;
       panStart = null;
-      return false;
+      return handledGesture ? false : undefined;
     };
 
     const handleWheel = (event) => {
-      if (dataState !== "ready" || !isPointInMapViewport(p.mouseX, p.mouseY)) {
+      if (!isCanvasEvent(event) || dataState !== "ready" || !isPointInMapViewport(p.mouseX, p.mouseY)) {
         return undefined;
       }
 

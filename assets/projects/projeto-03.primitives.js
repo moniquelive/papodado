@@ -5,6 +5,63 @@ const grainAt = (col, row, salt = 0) => {
   return value - Math.floor(value);
 };
 
+const contourCrosses = (from, to, level) => (from < level && to >= level) || (from >= level && to < level);
+
+const contourAmount = (from, to, level) => clamp((level - from) / (to - from || 1e-9), 0, 1);
+
+const drawContourLayer = (p, simulation, layout, colors, cellW, cellH, maxCell) => {
+  const levels = [
+    { value: 0.24, color: colors.cyan, alpha: 42 },
+    { value: 0.43, color: colors.magenta, alpha: 34 },
+    { value: 0.62, color: colors.coral, alpha: 28 },
+  ];
+
+  p.noFill();
+  p.strokeWeight(clamp(maxCell * 0.08, 0.55, 1.15));
+
+  for (let levelIndex = 0; levelIndex < levels.length; levelIndex += 1) {
+    const level = levels[levelIndex];
+    p.stroke(level.color[0], level.color[1], level.color[2], level.alpha);
+
+    for (let row = 0; row < simulation.rows - 1; row += 1) {
+      for (let col = 0; col < simulation.cols - 1; col += 1) {
+        const topLeft = simulation.intensityAt(row * simulation.cols + col);
+        const topRight = simulation.intensityAt(row * simulation.cols + col + 1);
+        const bottomRight = simulation.intensityAt((row + 1) * simulation.cols + col + 1);
+        const bottomLeft = simulation.intensityAt((row + 1) * simulation.cols + col);
+        const points = [];
+
+        if (contourCrosses(topLeft, topRight, level.value)) {
+          const amount = contourAmount(topLeft, topRight, level.value);
+          points.push({ x: layout.left + (col + 0.5 + amount) * cellW, y: layout.top + (row + 0.5) * cellH });
+        }
+
+        if (contourCrosses(topRight, bottomRight, level.value)) {
+          const amount = contourAmount(topRight, bottomRight, level.value);
+          points.push({ x: layout.left + (col + 1.5) * cellW, y: layout.top + (row + 0.5 + amount) * cellH });
+        }
+
+        if (contourCrosses(bottomRight, bottomLeft, level.value)) {
+          const amount = contourAmount(bottomRight, bottomLeft, level.value);
+          points.push({ x: layout.left + (col + 1.5 - amount) * cellW, y: layout.top + (row + 1.5) * cellH });
+        }
+
+        if (contourCrosses(bottomLeft, topLeft, level.value)) {
+          const amount = contourAmount(bottomLeft, topLeft, level.value);
+          points.push({ x: layout.left + (col + 0.5) * cellW, y: layout.top + (row + 1.5 - amount) * cellH });
+        }
+
+        if (points.length === 2) {
+          p.line(points[0].x, points[0].y, points[1].x, points[1].y);
+        } else if (points.length === 4) {
+          p.line(points[0].x, points[0].y, points[1].x, points[1].y);
+          p.line(points[2].x, points[2].y, points[3].x, points[3].y);
+        }
+      }
+    }
+  }
+};
+
 export const drawNeighborhoods = (surface, neighborhoods, colors) => {
   surface.clear();
   surface.push();
@@ -92,6 +149,8 @@ export const drawReactionLayer = (p, simulation, layout, colors, phase = 0) => {
       }
     }
   }
+
+  drawContourLayer(p, simulation, layout, colors, cellW, cellH, maxCell);
 
   p.pop();
 };

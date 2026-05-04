@@ -242,7 +242,7 @@ import { createSimulation } from "./projeto-03.simulation";
             continue;
           }
 
-          result.push({ ...occurrence, memory });
+          result.push({ ...occurrence, age, memory });
         }
       }
 
@@ -266,6 +266,27 @@ import { createSimulation } from "./projeto-03.simulation";
 
     const drawOccurrencePoints = (events) => {
       p.push();
+
+      for (let i = 0; i < events.length; i += 1) {
+        const event = events[i];
+        const currentMonth = clamp(1 - event.age / 1.1, 0, 1);
+
+        if (currentMonth <= 0) {
+          continue;
+        }
+
+        const baseColor = event.policeAction ? COLORS.policePoint : event.victims > 0 ? COLORS.victimPoint : COLORS.point;
+        const size = clamp(2.1 + event.weight * 0.72, 2.2, 7.2) * (0.58 + event.memory * 0.65);
+        const cycle = (p.frameCount * 0.024 + ((event.gridCol * 13 + event.gridRow * 7) % 19) / 19) % 1;
+        const ringSize = size * (2.2 + cycle * 2.35);
+        const ringAlpha = currentMonth * (1 - cycle) * 56;
+
+        p.noFill();
+        p.stroke(baseColor[0], baseColor[1], baseColor[2], ringAlpha);
+        p.strokeWeight(clamp(size * 0.16, 0.65, 1.4));
+        p.circle(event.x, event.y, ringSize);
+      }
+
       p.noStroke();
 
       for (let i = 0; i < events.length; i += 1) {
